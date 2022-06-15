@@ -1,0 +1,132 @@
+pom.xml
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.Hibermate</groupId>
+    <artifactId>Hibermate</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-core -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>5.6.2.Final</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.28</version>
+        </dependency>
+    </dependencies>
+</project>
+
+
+hibernate.cfg.xml
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-configuration SYSTEM "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+ 
+ 
+<hibernate-configuration>
+    <session-factory>
+           <property name="hibernate.hbm2ddl.auto">update</property>  
+       
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</property>
+        <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+        
+        
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/Hibernate</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="hibernate.connection.password">root</property>
+        
+        <property name="show_sql">true</property>
+        <property name="format_sql">true</property>
+        
+        <mapping class="Hibernate.CreatingEntityClassesLex"/>
+        
+    </session-factory>
+</hibernate-configuration>
+
+
+HibernateClass
+
+package Hibernate;
+import java.time.LocalDate;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+@Entity
+@Table(name = "customer")
+public class CreatingEntityClassesLex {
+    @Id
+    private Integer customerId;
+    private String customerName;
+    private LocalDate dateOfBirth;
+    private String address;
+    @Column(name = "phoneNumber")
+    private Long contactNumber;
+    // getters & setters (***put manually***)
+
+
+TestClass
+
+
+package tester;
+
+import java.time.LocalDate;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+
+import HibernateClass.CreatingEntityClassLex;
+
+
+public class Tester {
+    public static void main(String[] args) {
+        StandardServiceRegistry ssr = new StandardServiceRegistryBuilder().configure("hibernate.cfg.xml").build();
+        Metadata meta = new MetadataSources(ssr).getMetadataBuilder().build();
+
+        SessionFactory factory = meta.getSessionFactoryBuilder().build();
+
+        Session session = factory.openSession();
+        Transaction t = session.beginTransaction();
+from PavanSPare to everyone in this session:    4:28 PM
+try {
+            CreatingEntityClassLex e1 = new CreatingEntityClassLex();
+
+            e1.setAddress("Mysore");
+            e1.setContactNumber(8498845002L);
+            e1.setCustomerId(1);
+            e1.setDateOfBirth(LocalDate.now().minusDays(3));
+            e1.setCustomerName("Pavan2");
+
+            session.save(e1);
+            t.commit();
+            System.out.println("saved successfully");
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            factory.close();
+            session.close();
+        }
+    }
+}
+
+
+
+MySQLCommadLine Commond
+
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';
+
+FLUSH PRIVILEGES
+
+SELECT user, plugin FROM mysql.user;
