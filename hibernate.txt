@@ -1,0 +1,186 @@
+My Sql command line ----commands
+1---- show databases;
+2---- create database tryingHibernate;
+
+
+================POXM FILE=================
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.hibernate</groupId>
+	<artifactId>HIbernate</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>5.6.2.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>8.0.28</version>
+		</dependency>
+	</dependencies>
+</project>
+
+
+================Hibernate class=================
+create new package named HibernateClass and the create new class named CreatingEntityClassLex under src/main/java and copy below code.
+
+package HibernateClass;
+
+import java.time.LocalDate;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "customer")
+public class CreatingEntityClassLex {
+	@Id
+	private Integer customerId;
+	private String customerName;
+	private LocalDate dateOfBirth;
+	private String address;
+	@Column(name = "phoneNumber")
+	private Long contactNumber;
+
+	public Integer getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(Integer customerId) {
+		this.customerId = customerId;
+	}
+
+	public String getCustomerName() {
+		return customerName;
+	}
+
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
+
+	public LocalDate getDateOfBirth() {
+		return dateOfBirth;
+	}
+
+	public void setDateOfBirth(LocalDate dateOfBirth) {
+		this.dateOfBirth = dateOfBirth;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public Long getContactNumber() {
+		return contactNumber;
+	}
+
+	public void setContactNumber(Long contactNumber) {
+		this.contactNumber = contactNumber;
+	}
+}
+
+
+====================hibernate.cfg.xml=====================
+create new file under src/main/resources named hibernate.cfg.xml
+copy below code and save.
+-------------------------------------------------------
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-configuration SYSTEM "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+	<session-factory>
+		<property name="hibernate.hbm2ddl.auto">update</property>
+
+		<property name="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</property>
+		<property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+
+		<property name="hibernate.connection.url">jdbc:mysql://localhost:3306/tryingHibernate</property>
+		<property name="hibernate.connection.username">root</property>
+		<property name="hibernate.connection.password">root</property>
+
+		<property name="show_sql">true</property>
+		<property name="format_sql">true</property>
+
+		<mapping class="HibernateClass.CreatingEntityClassLex" />
+	</session-factory>
+</hibernate-configuration>
+
+======================tester==========================
+create new package named tester and the create new class named Tester under src/main/java and copy below code.
+----------------------------------------------------------
+package tester;
+
+import java.time.LocalDate;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+
+import HibernateClass.CreatingEntityClassLex;
+
+
+public class Tester {
+	public static void main(String[] args) {
+		StandardServiceRegistry ssr = new StandardServiceRegistryBuilder().configure("hibernate.cfg.xml").build();
+		Metadata meta = new MetadataSources(ssr).getMetadataBuilder().build();
+
+		SessionFactory factory = meta.getSessionFactoryBuilder().build();
+
+		Session session = factory.openSession();
+		Transaction t = session.beginTransaction();
+
+		try {
+			CreatingEntityClassLex e1 = new CreatingEntityClassLex();
+
+			e1.setAddress("Mysore");
+			e1.setContactNumber(84005002L);
+			e1.setCustomerId(1);
+			e1.setDateOfBirth(LocalDate.now().minusDays(3));
+			e1.setCustomerName("luffy");
+
+			session.save(e1);
+			t.commit();
+			System.out.println("saved successfully");
+
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			factory.close();
+			session.close();
+		}
+	}
+}
+
+-------------------------------------------------------------
+if error says : access denied for user'root'@'localhost'
+
+then come to my sqlcommand line and type
+
+type password,
+now type
+---------------------------------------------------
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';
+
+FLUSH PRIVILEGES;
+
+SELECT user,plugin FROM mysql.user;
+-----------------------------------------------------
+remember from now onwards your mysql password is root
+-----------------------------------------------------
+after code successfully executed.
+My Sql command line ----commands part2
+1---- show databases;
+2---- USE tryinghibernate;
+3---- SELECT * FROM customer;
